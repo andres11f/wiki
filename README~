@@ -1,0 +1,2 @@
+to add more servers:
+edit broker.cc. Change numServers variable, add another push_back to adrs with the new server address.

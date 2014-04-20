@@ -49,7 +49,10 @@ int main (void){
 			cout << "Name of article: ";
 				cin >> nameart;
 			art = search(nameart, adr, broker, recart);
-			cout << art;
+			if (art != "")
+				cout << art;
+			else
+				cout << "Error finding article \n";
 		}
 		//Edit
 		if ((input == "2") && (art == "")){
@@ -74,28 +77,23 @@ string search (string nameart, string adr, void* broker, void* recart){
 	msg = zmsg_recv(broker);
 
 	char *result = zmsg_popstr(msg);
-	char *explanation = zmsg_popstr(msg);
-	printf("%s. %s\n", result, explanation);
+	printf("%s. %s\n", result);
 
 	if (strcmp(result,"success") == 0){
 		string art = zmsg_recv(recart);
 		zmsg_t *msgaux = zmsg_new();
-		if (art != "")
-			zmsg_addstr(msgaux, "success");
-		else
-			zmsg_addstr(msgaux, "failure");
+		zmsg_addstr(msgaux, "success");
 		zmsg_send(&msgaux, recart);
+
 		free(result);
-		free(explanation);
 		zmsg_destroy(&msg);
 		zmsg_destroy(&msgaux);
 		return art;
 	}
 	else{
 		free(result);
-		free(explanation);
 		zmsg_destroy(&msg);
-		return art;
+		return "";
 	}
 }
 
@@ -111,10 +109,8 @@ void edit (string newart, void* broker){
 	msg = zmsg_recv(broker);
 
 	char *result = zmsg_popstr(msg);
-	char *explanation = zmsg_popstr(msg);
-	printf("%s. %s\n", result, explanation);
+	printf("%s. %s\n", result);
 
 	free(result);
-	free(explanation);
 	zmsg_destroy(&msg);
 }
