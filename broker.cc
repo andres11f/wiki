@@ -9,32 +9,38 @@
 using namespace std;
 
 int main(void){
-	list<string> listServers;
-	zctx_t *context = zctx_new(); 
-    void *responder = zsocket_new(context, ZMQ_REP); 
-    int pn = zsocket_bind(responder, "tcp://*:12350"); 
+	list<void*> listServers;
+	zctx_t *context = zctx_new();
+    void *broker = zsocket_new(context, ZMQ_REP); 
+    int pn = zsocket_bind(broker, "tcp://*:12350"); 
     cout << "Port number " << pn << "\n"; 
 
-    /*
-    connect to ES
-    */
+    //conection to ES
+    void *editserver = zsocket_new(context, ZMQ_REQ);
+    int rc = zsocket_connect (editserver, "tcp://localhost:12351");
+    assert(rc == 0);
 
     /*
     connect to all server
+    for (int i = 0; i < listServers.size(); i++){
+        void *tmpsocket = zsocket_new(context, ZMQ_REQ);
+        zsocket_connect (editserver, unordered_map.key(i));
+        unordered_map[i] = editserver;
+    }
     */
 
     while(1){
     	zmsg_t *msg = zmsg_new();
-    	msg = zmsg_recv(responder);
+    	msg = zmsg_recv(broker);
     	zmsg_dump();
     	zmsg_t *response = zmsg_new();
     	dispatch(msg, response); 
         zmsg_destroy(&msg); 
-        zmsg_send(&response, responder); 
+        zmsg_send(&response, broker); 
   
         zmsg_destroy(&response); 
     } 
-    zsocket_destroy(context, responder);  
+    zsocket_destroy(context, broker);  
     zctx_destroy(&context); 
     return 0; 
 }
@@ -50,7 +56,8 @@ void dispatch(zmsg_t *msg, zmsg_t *response){
     }
     if (strcmp(op, "edit") == 0){
     	char *newart = zmsg_popstr(msg);
-    	//conectar RS
-    	//send to RS	
+    	//send to RS
     }
 }
+
+chooseServer
