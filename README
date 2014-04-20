@@ -1,3 +1,8 @@
 to add more servers:
 edit broker.cc and editserver.cc:
 Change numServers variable, add another push_back to adrs with the new server address. 
+
+Current valid addresses (ONLY USE THESE):
+12352
+12354
+15356

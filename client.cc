@@ -8,8 +8,8 @@
 
 using namespace std;
 
-string search (string nameart, string adr, void* broker, void* recart);
-void edit (string newart, void* broker);
+string search (string nameart, void* broker, void* recart);
+void edit (string nameart, string newart, void* broker);
 
 
 int main (void){
@@ -19,16 +19,9 @@ int main (void){
 	int rc = zsocket_connect (broker, "tcp://localhost:12350");
 	assert(rc == 0);
 
-	//socket recart
-	string listenAdr;
-	cout << "port:";
-	cin >> listenAdr;
-	string adr = "tcp://*:";
-	adr.append(listenAdr);
-	void *recart = zsocket_new(context, ZMQ_REP);
-	rc = zsocket_bind (recart, adr.c_str());
 
 	string art = "";
+	string nameart = "";
 	while(1){
 		if (art == ""){
 			cout << "1. Search Article. \n";
@@ -48,29 +41,28 @@ int main (void){
 		if (input == "1"){
 			cout << "Name of article: ";
 				cin >> nameart;
-			art = search(nameart, adr, broker, recart);
+			art = search(nameart, broker, recart);
 			if (art != "")
 				cout << art;
 			else
 				cout << "Error finding article \n";
 		}
 		//Edit
-		if ((input == "2") && (art == "")){
+		if ((input == "2") && (art != "")){
 			string newart;
 			cout << "New article: ";
 			cin >> newart;
-			edit(newart, broker);
+			edit(nameart, newart, broker);
 		}
 	}
 }
 
-string search (string nameart, string adr, void* broker, void* recart){
+string search (string nameart, void* broker, void* recart){
 	zmsg_t *msg = zmsg_new();
 	assert(msg);
 	op = "search";
 	zmsg_addstr(msg, op.c_str());
 	zmsg_addstr(msg, nameart.c_str());
-	zmsg_addstr(msg, adr.c_str());
 	zmsg_send(&msg, broker);
 
 	assert(msg == NULL);
@@ -97,11 +89,12 @@ string search (string nameart, string adr, void* broker, void* recart){
 	}
 }
 
-void edit (string newart, void* broker){
+void edit (string nameart, string newart, void* broker){
 	zmsg_t *msg = zmsg_new();
 	assert(msg);
 	op = "edit";
 	zmsg_addstr(msg, op.c_str());
+	zmsg_addstr(msg, nameart.c_str());
 	zmsg_addstr(msg, newart.c_str());
 	zmsg_send(&msg, broker);
 

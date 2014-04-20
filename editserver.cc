@@ -42,16 +42,19 @@ int main (void){
     	zmsg_dump();
     	list<void*>::iterator it;
     	for (it = listServers.begin(); it != listServers.end(); it++){
-    		zmsg_t *response = zmsg_new();
+   			zmsg_t *response = zmsg_new();
     		zmsg_send(&msg, it);
     		response = zmsg_recv(it);
-        	zmsg_send(&response, editserver); 
-        	zmsg_destroy(&response);
+    		char *r = zmsg_popstr(reponse);
+    		if (strcmp(r, "failure") == 0)
+    			break;
     	}
+    	zmsg_send(&response, editserver);
+    	zmsg_destroy(&response);
     	zmsg_destroy(&msg);
     }
 
     zsocket_destroy(context, editserver);  
     zctx_destroy(&context); 
     return 0; 
-}
+}	

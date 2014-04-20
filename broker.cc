@@ -56,7 +56,7 @@ int main(void){
   
         zmsg_destroy(&response); 
     }
-    
+
     zsocket_destroy(context, broker);  
     zctx_destroy(&context); 
     return 0; 
@@ -66,7 +66,7 @@ int main(void){
 void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver){
 	assert(zmsg_size(msg) >= 1);
     char *op = zmsg_popstr(msg);        //DELETES THE FRAME TOO???
-    if (strcmp(op, "search") == 0){   	
+    if (strcmp(op, "search") == 0){
     	void *server = chooseServer();	//chooseServer deberia mandar un mensaje al servidor elegido aleatoriamente preguntandole si esta ocupado. Si lo esta, alla otro servidor aleatoriamente.
         zmsg_send(&msg, server);        //msg contains nameart, adr
         response = zmsg_recv(server);
