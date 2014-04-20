@@ -12,6 +12,7 @@ list<void*> listServers;
 int numServers = 3;
 
 void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver);
+void* chooseServer();
 
 int main(void){
     list<string> adrs;
@@ -19,7 +20,6 @@ int main(void){
     adrs.push_back("12352");
     adrs.push_back("12354");
     adrs.push_back("12356");
-
     list<string>::iterator adrsIt;
     adrsIt = adrs.begin();
 
@@ -56,7 +56,7 @@ int main(void){
   
         zmsg_destroy(&response); 
     }
-
+    
     zsocket_destroy(context, broker);  
     zctx_destroy(&context); 
     return 0; 
