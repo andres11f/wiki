@@ -10,11 +10,11 @@
 
 using namespace std;
 
-void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver);
+zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver);
 void* chooseServer();
 
 list<void*> listServers;
-int numServers = 3;
+int numServers = 1;
 
 int main(void){
     list<string> adrs;
@@ -38,52 +38,61 @@ int main(void){
 
     //connection to all servers
     for (int i = 0; i < numServers; i++){
-        string adr = "tcp://*:";
+        string adr = "tcp://localhost:";
         adr.append(*adrsIt);
         void *tmpsocket = zsocket_new(context, ZMQ_REQ);
-        zsocket_connect (editserver, adr.c_str());
+        zsocket_connect (tmpsocket, adr.c_str());
         listServers.push_back(tmpsocket);
         adrsIt++;
+        cout << "conexion " << adr << "\n";
     }
 
-    
     while(1){
     	zmsg_t *msg = zmsg_new();
+        cout<<"waiting...\n";
     	msg = zmsg_recv(broker);
+        cout<<"from client \n";
     	zmsg_dump(msg);
-    	zmsg_t *response = zmsg_new();
-    	dispatch(msg, response, editserver); 
-        zmsg_destroy(&msg); 
-        zmsg_send(&response, broker); 
-  
-        zmsg_destroy(&response); 
+        zmsg_t *response = zmsg_new();
+        void *server = chooseServer();
+    	response = dispatch(msg, server, editserver);
+        cout<<"to client \n";
+        zmsg_dump(response);
+        zmsg_send(&response, broker);
+        //zmsg_destroy(&msg);
+        zmsg_destroy(&response);
     }
 
-    zsocket_destroy(context, broker);  
+    for (list<void*>::iterator it = listServers.begin(); it != listServers.end(); it++)
+        zsocket_destroy(context, *it);
+    zsocket_destroy(context, broker);
+    zsocket_destroy(context, editserver);
     zctx_destroy(&context); 
     return 0; 
 }
 
 
-void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver){
+zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver){
 	assert(zmsg_size(msg) >= 1);
-    char *op = zmsg_popstr(msg);        //DELETES THE FRAME TOO???
+    char *op = zmsg_popstr(msg);    
     if (strcmp(op, "search") == 0){
-    	void *server = chooseServer();	//chooseServer deberia mandar un mensaje al servidor elegido aleatoriamente preguntandole si esta ocupado. Si lo esta, alla otro servidor aleatoriamente.
-        zmsg_send(&msg, server);        //msg contains nameart, adr
-        response = zmsg_recv(server);
+        zmsg_send(&msg, server);        
+        free(op);
+        return zmsg_recv(server);
     }
 
     if (strcmp(op, "edit") == 0){
     	zmsg_send(&msg, editserver);
-    	response = zmsg_recv(editserver);
+        free(op);
+    	return zmsg_recv(editserver);
     }
-    free(op);
 }
 
 void* chooseServer(){
+    /*cout<<"paso por aca 2";
     srand(time(NULL));
-    int n = rand() % numServers;
+    int n = rand() % numServers;*/
+    int n=1;
     list<void*>::iterator iter;
     iter = listServers.begin();
     for (int i = 0; i < n; i++)

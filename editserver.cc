@@ -14,7 +14,7 @@ list<void*> listServers;
 void dispatch(zmsg_t *msg, zmsg_t *response);
 
 int main (void){
-	int numServers = 3;
+	int numServers = 1;
 	list<string> adrs;
     //servers adresses for edition
     adrs.push_back("12353");
@@ -31,17 +31,20 @@ int main (void){
 
     //connection to all servers
     for (int i = 0; i < numServers; i++){
-        string adr = "tcp://*:";
+        string adr = "tcp://localhost:";
         adr.append(*adrsIt);
         void *tmpsocket = zsocket_new(context, ZMQ_REQ);
-        zsocket_connect (editserver, adr.c_str());
+        zsocket_connect (tmpsocket, adr.c_str());
         listServers.push_back(tmpsocket);
         adrsIt++;
+        cout<<"conexion " << i << "\n";
     }
 
     while(1){
     	zmsg_t *msg = zmsg_new();
+        cout << "waiting...\n";
     	msg = zmsg_recv(editserver);
+        cout<<"from broker \n";
     	zmsg_dump(msg);
     	list<void*>::iterator it;
         zmsg_t *response = zmsg_new();
@@ -53,9 +56,12 @@ int main (void){
     			break;
             free(r);
     	}
-        zmsg_destroy(&response);
+        cout<<"to broker \n";
+        zmsg_dump(response);
     	zmsg_send(&response, editserver);
-    	zmsg_destroy(&msg);
+        //zmsg_destroy(&response);
+    	//zmsg_destroy(&msg);
+        cout<<"recibido";
     }
 
     zsocket_destroy(context, editserver);  

@@ -23,6 +23,7 @@ int main (void){
 	string art = "";
 	string nameart = "";
 	while(1){
+		string input = "";
 		if (art == "")
 			cout << "1. Search Article. \n";
 		else{
@@ -30,27 +31,33 @@ int main (void){
 			cout << "2. Edit Article. \n";
 		}
 		cout << "0. Exit. \n";
-
-		//broker
-		string input = "";
+		cout << "Eleccion: ";
+		cout.flush();
 		cin >> input;
 
 		//search
 		if (input == "1"){
 			cout << "Name of article: ";
-				cin >> nameart;
+			cout.flush();
+			cin >> nameart;
 			art = search(nameart, broker);
 			if (art != "")
-				cout << art;
+				cout << "===================================================\n"<< art << "===================================================\n";
 			else
 				cout << "Error finding article \n";
 		}
 		//Edit
-		if ((input == "2") && (art != "")){
+		else if ((input == "2") && (art != "")){
 			string newart;
 			cout << "New article: ";
+			cout.flush();
 			cin >> newart;
 			edit(nameart, newart, broker);
+		}
+		else if (input == "0"){
+			zsocket_destroy(context, broker);
+			zctx_destroy(&context);
+			return 0;
 		}
 	}
 }
@@ -69,8 +76,9 @@ string search (string nameart, void* broker){
 
 	char *result = zmsg_popstr(msg);
 	string art = result;
+	if (art == "failure")
+		art = "";
 	free(result);
-	zmsg_destroy(&msg);
 	zmsg_destroy(&msg);
 	return art;
 }
@@ -89,7 +97,7 @@ void edit (string nameart, string newart, void* broker){
 	msg = zmsg_recv(broker);
 
 	char *result = zmsg_popstr(msg);
-	printf("%s. %s\n", result);
+	printf("%s\n", result);
 
 	free(result);
 	zmsg_destroy(&msg);
