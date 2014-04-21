@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <iostream>
+#include <list>
+
+using namespace std;
 
 list<void*> listServers;
 
@@ -29,7 +32,7 @@ int main (void){
     //connection to all servers
     for (int i = 0; i < numServers; i++){
         string adr = "tcp://*:";
-        adr.append(adrsIt);
+        adr.append(*adrsIt);
         void *tmpsocket = zsocket_new(context, ZMQ_REQ);
         zsocket_connect (editserver, adr.c_str());
         listServers.push_back(tmpsocket);
@@ -39,18 +42,19 @@ int main (void){
     while(1){
     	zmsg_t *msg = zmsg_new();
     	msg = zmsg_recv(editserver);
-    	zmsg_dump();
+    	zmsg_dump(msg);
     	list<void*>::iterator it;
+        zmsg_t *response = zmsg_new();
     	for (it = listServers.begin(); it != listServers.end(); it++){
-   			zmsg_t *response = zmsg_new();
-    		zmsg_send(&msg, it);
-    		response = zmsg_recv(it);
-    		char *r = zmsg_popstr(reponse);
+    		zmsg_send(&msg, *it);
+    		response = zmsg_recv(*it);
+    		char *r = zmsg_popstr(response);
     		if (strcmp(r, "failure") == 0)
     			break;
+            free(r);
     	}
+        zmsg_destroy(&response);
     	zmsg_send(&response, editserver);
-    	zmsg_destroy(&response);
     	zmsg_destroy(&msg);
     }
 

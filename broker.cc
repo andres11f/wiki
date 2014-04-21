@@ -6,13 +6,15 @@
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
+#include <list>
 
 using namespace std;
-list<void*> listServers;
-int numServers = 3;
 
 void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver);
 void* chooseServer();
+
+list<void*> listServers;
+int numServers = 3;
 
 int main(void){
     list<string> adrs;
@@ -37,7 +39,7 @@ int main(void){
     //connection to all servers
     for (int i = 0; i < numServers; i++){
         string adr = "tcp://*:";
-        adr.append(adrsIt);
+        adr.append(*adrsIt);
         void *tmpsocket = zsocket_new(context, ZMQ_REQ);
         zsocket_connect (editserver, adr.c_str());
         listServers.push_back(tmpsocket);
@@ -48,7 +50,7 @@ int main(void){
     while(1){
     	zmsg_t *msg = zmsg_new();
     	msg = zmsg_recv(broker);
-    	zmsg_dump();
+    	zmsg_dump(msg);
     	zmsg_t *response = zmsg_new();
     	dispatch(msg, response, editserver); 
         zmsg_destroy(&msg); 
@@ -76,6 +78,7 @@ void dispatch(zmsg_t *msg, zmsg_t *response, void *editserver){
     	zmsg_send(&msg, editserver);
     	response = zmsg_recv(editserver);
     }
+    free(op);
 }
 
 void* chooseServer(){
@@ -83,6 +86,8 @@ void* chooseServer(){
     int n = rand() % numServers;
     list<void*>::iterator iter;
     iter = listServers.begin();
-    chosen = iter+n;
+    for (int i = 0; i < n; i++)
+        iter = iter++;
+    void* chosen = *iter;
     return chosen;
 }

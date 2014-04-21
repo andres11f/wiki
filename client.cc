@@ -8,7 +8,7 @@
 
 using namespace std;
 
-string search (string nameart, void* broker, void* recart);
+string search (string nameart, void* broker);
 void edit (string nameart, string newart, void* broker);
 
 
@@ -23,15 +23,13 @@ int main (void){
 	string art = "";
 	string nameart = "";
 	while(1){
-		if (art == ""){
+		if (art == "")
 			cout << "1. Search Article. \n";
-		}
 		else{
 			cout << "1. Search Article. \n";
 			cout << "2. Edit Article. \n";
+		}
 		cout << "0. Exit. \n";
-
-		zmq_poll(items, 3, -1);
 
 		//broker
 		string input = "";
@@ -41,7 +39,7 @@ int main (void){
 		if (input == "1"){
 			cout << "Name of article: ";
 				cin >> nameart;
-			art = search(nameart, broker, recart);
+			art = search(nameart, broker);
 			if (art != "")
 				cout << art;
 			else
@@ -57,10 +55,11 @@ int main (void){
 	}
 }
 
-string search (string nameart, void* broker, void* recart){
+
+string search (string nameart, void* broker){
 	zmsg_t *msg = zmsg_new();
 	assert(msg);
-	op = "search";
+	string op = "search";
 	zmsg_addstr(msg, op.c_str());
 	zmsg_addstr(msg, nameart.c_str());
 	zmsg_send(&msg, broker);
@@ -69,30 +68,18 @@ string search (string nameart, void* broker, void* recart){
 	msg = zmsg_recv(broker);
 
 	char *result = zmsg_popstr(msg);
-	printf("%s. %s\n", result);
-
-	if (strcmp(result,"success") == 0){
-		string art = zmsg_recv(recart);
-		zmsg_t *msgaux = zmsg_new();
-		zmsg_addstr(msgaux, "success");
-		zmsg_send(&msgaux, recart);
-
-		free(result);
-		zmsg_destroy(&msg);
-		zmsg_destroy(&msgaux);
-		return art;
-	}
-	else{
-		free(result);
-		zmsg_destroy(&msg);
-		return "";
-	}
+	string art = result;
+	free(result);
+	zmsg_destroy(&msg);
+	zmsg_destroy(&msg);
+	return art;
 }
+
 
 void edit (string nameart, string newart, void* broker){
 	zmsg_t *msg = zmsg_new();
 	assert(msg);
-	op = "edit";
+	string op = "edit";
 	zmsg_addstr(msg, op.c_str());
 	zmsg_addstr(msg, nameart.c_str());
 	zmsg_addstr(msg, newart.c_str());

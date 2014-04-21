@@ -1,3 +1,11 @@
 tests.cc
 README~
 .gitignore~
+client
+client.o
+broker
+broker.o
+editserver
+editserver.o
+server
+server.o
