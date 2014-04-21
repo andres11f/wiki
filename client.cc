@@ -42,16 +42,18 @@ int main (void){
 			cin >> nameart;
 			art = search(nameart, broker);
 			if (art != "")
-				cout << "===================================================\n"<< art << "===================================================\n";
+				cout << "===================================================\n"<< art << "\n===================================================\n";
 			else
 				cout << "Error finding article \n";
 		}
 		//Edit
 		else if ((input == "2") && (art != "")){
-			string newart;
+			string newart = "";
 			cout << "New article: ";
 			cout.flush();
-			cin >> newart;
+			cin.clear(); 
+			cin.ignore(INT_MAX,'\n');
+			getline(cin,newart);
 			edit(nameart, newart, broker);
 		}
 		else if (input == "0"){

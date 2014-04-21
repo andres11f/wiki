@@ -42,9 +42,9 @@ int main (void){
 
     while(1){
     	zmsg_t *msg = zmsg_new();
-        cout << "waiting...\n";
+        cout << "\nwaiting...\n";
     	msg = zmsg_recv(editserver);
-        cout<<"from broker \n";
+        cout<<"\nfrom broker \n";
     	zmsg_dump(msg);
     	list<void*>::iterator it;
         zmsg_t *response = zmsg_new();
@@ -55,13 +55,13 @@ int main (void){
     		if (strcmp(r, "failure") == 0)
     			break;
             free(r);
+            zmsg_addstr(response, "success");
     	}
-        cout<<"to broker \n";
+        cout<<"\nto broker \n";
         zmsg_dump(response);
     	zmsg_send(&response, editserver);
-        //zmsg_destroy(&response);
-    	//zmsg_destroy(&msg);
-        cout<<"recibido";
+        zmsg_destroy(&response);
+    	zmsg_destroy(&msg);
     }
 
     zsocket_destroy(context, editserver);  

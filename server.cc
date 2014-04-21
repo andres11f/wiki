@@ -51,7 +51,7 @@ int main (void){
     		zmsg_t *msg = zmsg_new();
     		zmsg_t *response = zmsg_new();
 			msg = zmsg_recv(searchsocket);
-            cout<<"from broker \n";
+            cout<<"\nfrom broker \n";
 			zmsg_dump(msg);
 			char *nameart = zmsg_popstr(msg);
 			string name = nameart;
@@ -74,7 +74,7 @@ int main (void){
     		zmsg_t *msg = zmsg_new();
     		zmsg_t *response = zmsg_new();
     		msg = zmsg_recv(editsocket);
-            cout<<"from editserver \n";
+            cout<<"\nfrom editserver \n";
     		zmsg_dump(msg);
     		char *nart = zmsg_popstr(msg);
     		char *neart = zmsg_popstr(msg);
@@ -84,9 +84,10 @@ int main (void){
 			if (got == articles.end())
 				zmsg_addstr(response, "failure");
 			articles[nameart] = newart;
+            cout<<"cambio en articulo "<<nameart<<" por: "<<articles[nameart]<<"\n";
     		zmsg_addstr(response, "success");
     		zmsg_destroy(&msg);
-            cout<<"to editserver \n";
+            cout<<"\nto editserver \n";
             zmsg_dump(response);
     		zmsg_send(&response, editsocket);
             zmsg_destroy(&response);

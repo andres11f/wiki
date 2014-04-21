@@ -49,14 +49,14 @@ int main(void){
 
     while(1){
     	zmsg_t *msg = zmsg_new();
-        cout<<"waiting...\n";
+        cout<<"\nwaiting...\n";
     	msg = zmsg_recv(broker);
-        cout<<"from client \n";
+        cout<<"\nfrom client \n";
     	zmsg_dump(msg);
         zmsg_t *response = zmsg_new();
         void *server = chooseServer();
     	response = dispatch(msg, server, editserver);
-        cout<<"to client \n";
+        cout<<"\nto client \n";
         zmsg_dump(response);
         zmsg_send(&response, broker);
         //zmsg_destroy(&msg);
