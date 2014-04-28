@@ -89,10 +89,9 @@ zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver){
 }
 
 void* chooseServer(){
-    /*cout<<"paso por aca 2";
     srand(time(NULL));
-    int n = rand() % numServers;*/
-    int n=1;
+    int n = rand() % numServers;
+    cout << "n: "<<n<<"\n";
     list<void*>::iterator iter;
     iter = listServers.begin();
     for (int i = 0; i < n; i++)

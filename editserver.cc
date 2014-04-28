@@ -37,7 +37,7 @@ int main (void){
         zsocket_connect (tmpsocket, adr.c_str());
         listServers.push_back(tmpsocket);
         adrsIt++;
-        cout<<"conexion " << i << "\n";
+        cout<<"conexion " << adr << "\n";
     }
 
     while(1){
@@ -61,7 +61,7 @@ int main (void){
         zmsg_dump(response);
     	zmsg_send(&response, editserver);
         zmsg_destroy(&response);
-    	zmsg_destroy(&msg);
+    	//zmsg_destroy(&msg);
     }
 
     zsocket_destroy(context, editserver);  

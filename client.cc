@@ -55,6 +55,7 @@ int main (void){
 			cin.ignore(INT_MAX,'\n');
 			getline(cin,newart);
 			edit(nameart, newart, broker);
+			art == "";
 		}
 		else if (input == "0"){
 			zsocket_destroy(context, broker);
