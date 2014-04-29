@@ -7,4 +7,4 @@ Current valid ports for servers (ONLY USE THESE IN THIS ORDER):
 
 to add more servers:
 edit broker.cc AND editserver.cc:
-Change numServers variable in both, add another push_back in to adrs with the new server address. 
+Change numServers variable in both, add another push_back in adrs with the new server address. 
