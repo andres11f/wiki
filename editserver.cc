@@ -15,11 +15,13 @@ void dispatch(zmsg_t *msg, zmsg_t *response);
 
 int main (void){
 	int numServers = 2;
+    //valid servers addresses for edition
 	list<string> adrs;
-    //servers adresses for edition
     adrs.push_back("12353");
     adrs.push_back("12355");
     adrs.push_back("12357");
+    adrs.push_back("12359");
+    adrs.push_back("12361");
     list<string>::iterator adrsIt;
     adrsIt = adrs.begin();
 
@@ -47,6 +49,7 @@ int main (void){
         cout<<"\nfrom broker \n";
     	zmsg_dump(msg);
     	list<void*>::iterator it;
+        //send msg to all servers
     	for (it = listServers.begin(); it != listServers.end(); it++){
             zmsg_t *tmpresponse = zmsg_new();
             zmsg_t *tmpmsg = zmsg_new();
@@ -66,6 +69,7 @@ int main (void){
             zmsg_addstr(response, "success");
         else
             zmsg_addstr(response, "failure");
+
         cout<<"\nto broker \n";
         zmsg_dump(response);
     	zmsg_send(&response, editserver);

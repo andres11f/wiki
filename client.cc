@@ -19,7 +19,6 @@ int main (void){
 	int rc = zsocket_connect (broker, "tcp://localhost:12350");
 	assert(rc == 0);
 
-
 	string art = "";
 	string nameart = "";
 	while(1){
@@ -39,10 +38,12 @@ int main (void){
 		if (input == "1"){
 			cout << "Name of article: ";
 			cout.flush();
-			cin >> nameart;
+			cin.clear(); 
+			cin.ignore(INT_MAX,'\n');
+			getline(cin,nameart);
 			art = search(nameart, broker);
 			if (art != "")
-				cout << "===================================================\n"<< art << "\n===================================================\n";
+				cout << "=======================================\n"<< art << "\n=======================================\n";
 			else
 				cout << "Error finding article \n";
 		}
@@ -100,7 +101,7 @@ void edit (string nameart, string newart, void* broker){
 	msg = zmsg_recv(broker);
 
 	char *result = zmsg_popstr(msg);
-	printf("%s\n", result);
+	cout << result << "\n";
 
 	free(result);
 	zmsg_destroy(&msg);

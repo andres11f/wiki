@@ -1,8 +1,10 @@
+Current valid ports for servers (ONLY USE THESE IN THIS ORDER):
+12352
+12354
+12356
+12358
+12360
+
 to add more servers:
 edit broker.cc AND editserver.cc:
 Change numServers variable in both, add another push_back in to adrs with the new server address. 
-
-Current valid addresses (ONLY USE THESE):
-12352
-12354
-15356

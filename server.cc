@@ -12,11 +12,14 @@ using namespace std;
 unordered_map<string, string> articles;
 
 int main (void){
-    //articulos
-    articles["1"]="un numero";
-    articles["casa"]="sitio donde vive gente";
-    articles["ave"]="animal";
-    articles["musica"]="ondas en el aire";
+    articles["colombia"]="República unitaria de América situada en la región noroccidental de América del Sur";
+    articles["casa"]="edificación construida para ser habitada";
+    articles["lluvia"]="fenómeno atmosférico de tipo acuático que se inicia con la condensación del vapor de agua contenido en las nubes.";
+    articles["1"]="primer número natural y también es el número entero que sigue al cero (0) y precede al dos (2)";
+    articles["isaac newton"]="físico, filósofo, teólogo, inventor, alquimista y matemático inglés, autor de los Philosophiae naturalis principia mathematica, más conocidos como los Principia, donde describió la ley de la gravitación universal y estableció las bases de la mecánica clásica mediante las leyes que llevan su nombre";
+    articles["inglaterra"]="una de las cuatro naciones constituyentes del Reino Unido";
+    articles["musica"]="arte de organizar sensible y lógicamente una combinación coherente de sonidos y silencios utilizando los principios fundamentales de la melodía, la armonía y el ritmo, mediante la intervención de complejos procesos psico-anímicos";
+    articles["13"]="número natural que sigue al doce y precede al catorce";
 
 	zctx_t *context = zctx_new();
 	//ask user for the address of the bind
@@ -25,6 +28,7 @@ int main (void){
 	cin >> recvadr;
 	string adr = "tcp://*:";
 	adr.append(recvadr);
+
 	//search socket
     void *searchsocket = zsocket_new(context, ZMQ_REP); 
     int pn = zsocket_bind(searchsocket, adr.c_str()); 

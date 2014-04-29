@@ -13,15 +13,17 @@ using namespace std;
 zmsg_t* dispatch(zmsg_t *msg, void *editserver);
 void* chooseServer();
 
-list<void*> listServers;
+list<void*> listServers;    //sockets list
 int numServers = 2;
 
 int main(void){
+    //valid servers addresses
     list<string> adrs;
-    //servers adresses
     adrs.push_back("12352");
     adrs.push_back("12354");
     adrs.push_back("12356");
+    adrs.push_back("12358");
+    adrs.push_back("12360");
     list<string>::iterator adrsIt;
     adrsIt = adrs.begin();
 
