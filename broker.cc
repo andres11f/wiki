@@ -10,11 +10,11 @@
 
 using namespace std;
 
-zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver);
+zmsg_t* dispatch(zmsg_t *msg, void *editserver);
 void* chooseServer();
 
 list<void*> listServers;
-int numServers = 1;
+int numServers = 2;
 
 int main(void){
     list<string> adrs;
@@ -29,7 +29,7 @@ int main(void){
     //socket broker
     void *broker = zsocket_new(context, ZMQ_REP); 
     int pn = zsocket_bind(broker, "tcp://*:12350"); 
-    cout << "Port number " << pn << "\n"; 
+    cout << "broker port " << pn << "\n"; 
 
     //conection to ES
     void *editserver = zsocket_new(context, ZMQ_REQ);
@@ -54,8 +54,7 @@ int main(void){
         cout<<"\nfrom client \n";
     	zmsg_dump(msg);
         zmsg_t *response = zmsg_new();
-        void *server = chooseServer();
-    	response = dispatch(msg, server, editserver);
+    	response = dispatch(msg, editserver);
         cout<<"\nto client \n";
         zmsg_dump(response);
         zmsg_send(&response, broker);
@@ -72,10 +71,11 @@ int main(void){
 }
 
 
-zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver){
+zmsg_t* dispatch(zmsg_t *msg, void *editserver){
 	assert(zmsg_size(msg) >= 1);
     char *op = zmsg_popstr(msg);    
     if (strcmp(op, "search") == 0){
+        void *server = chooseServer();
         zmsg_send(&msg, server);        
         free(op);
         return zmsg_recv(server);
@@ -91,11 +91,10 @@ zmsg_t* dispatch(zmsg_t *msg, void *server, void *editserver){
 void* chooseServer(){
     srand(time(NULL));
     int n = rand() % numServers;
-    cout << "n: "<<n<<"\n";
+    cout << "chosen server: "<<n+1<<"\n";
     list<void*>::iterator iter;
     iter = listServers.begin();
     for (int i = 0; i < n; i++)
-        iter = iter++;
-    void* chosen = *iter;
-    return chosen;
+        iter++;
+    return *iter;
 }

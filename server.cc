@@ -66,7 +66,7 @@ int main (void){
 			zmsg_send(&response, searchsocket);
             zmsg_destroy(&response);
             free(nameart);
-            cout<<"task done \n";
+            cout<<"=======task done======= \n";
     	}
     	//edit
     	if  (items[1].revents & ZMQ_POLLIN){
@@ -84,7 +84,7 @@ int main (void){
 			if (got == articles.end())
 				zmsg_addstr(response, "failure");
 			articles[nameart] = newart;
-            cout<<"cambio en articulo "<<nameart<<" por: "<<articles[nameart]<<"\n";
+            cout<<"new article "<<nameart<<": "<<articles[nameart]<<"\n";
     		zmsg_addstr(response, "success");
     		zmsg_destroy(&msg);
             cout<<"\nto editserver \n";
@@ -93,7 +93,7 @@ int main (void){
             zmsg_destroy(&response);
             free(nart);
             free(neart);
-            cout<<"task done \n";
+            cout<<"=======task done======= \n";
     	}
 	}
 	zsocket_destroy(context, searchsocket);

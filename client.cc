@@ -31,7 +31,7 @@ int main (void){
 			cout << "2. Edit Article. \n";
 		}
 		cout << "0. Exit. \n";
-		cout << "Eleccion: ";
+		cout << "Option: ";
 		cout.flush();
 		cin >> input;
 
@@ -55,7 +55,7 @@ int main (void){
 			cin.ignore(INT_MAX,'\n');
 			getline(cin,newart);
 			edit(nameart, newart, broker);
-			art == "";
+			art = "";
 		}
 		else if (input == "0"){
 			zsocket_destroy(context, broker);
