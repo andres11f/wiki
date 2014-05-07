@@ -12,19 +12,19 @@ using namespace std;
 unordered_map<string, string> articles;
 
 int main (void){
-    articles["colombia"]="República unitaria de América situada en la región noroccidental de América del Sur";
+    articles["colombia"]="Republica unitaria de America situada en la region noroccidental de America del Sur";
     articles["casa"]="edificación construida para ser habitada";
+    articles["inglaterra"]="una de las cuatro naciones constituyentes del Reino Unido";
     articles["lluvia"]="fenómeno atmosférico de tipo acuático que se inicia con la condensación del vapor de agua contenido en las nubes.";
     articles["1"]="primer número natural y también es el número entero que sigue al cero (0) y precede al dos (2)";
     articles["isaac newton"]="físico, filósofo, teólogo, inventor, alquimista y matemático inglés, autor de los Philosophiae naturalis principia mathematica, más conocidos como los Principia, donde describió la ley de la gravitación universal y estableció las bases de la mecánica clásica mediante las leyes que llevan su nombre";
-    articles["inglaterra"]="una de las cuatro naciones constituyentes del Reino Unido";
     articles["musica"]="arte de organizar sensible y lógicamente una combinación coherente de sonidos y silencios utilizando los principios fundamentales de la melodía, la armonía y el ritmo, mediante la intervención de complejos procesos psico-anímicos";
     articles["13"]="número natural que sigue al doce y precede al catorce";
 
 	zctx_t *context = zctx_new();
 	//ask user for the address of the bind
 	string recvadr;
-	cout << "port:";
+	cout << "listening port:";
 	cin >> recvadr;
 	string adr = "tcp://*:";
 	adr.append(recvadr);
@@ -32,7 +32,7 @@ int main (void){
 	//search socket
     void *searchsocket = zsocket_new(context, ZMQ_REP); 
     int pn = zsocket_bind(searchsocket, adr.c_str()); 
-    cout << "search socket " << pn << "\n"; 
+    cout << "search port " << pn << "\n"; 
 
     //edit socket
     int n = atoi(recvadr.c_str()) + 1;
@@ -41,7 +41,7 @@ int main (void){
     adr.append(recvadr);
     void *editsocket = zsocket_new(context, ZMQ_REP);
     pn = zsocket_bind(editsocket, adr.c_str()); 
-    cout << "edit socket " << pn << "\n";
+    cout << "edit port " << pn << "\n";
 
     zmq_pollitem_t items [] = {
 		{searchsocket, 0, ZMQ_POLLIN, 0},
@@ -74,7 +74,6 @@ int main (void){
     	}
     	//edit
     	if  (items[1].revents & ZMQ_POLLIN){
-            cout<<"socket edit \n";
     		zmsg_t *msg = zmsg_new();
     		zmsg_t *response = zmsg_new();
     		msg = zmsg_recv(editsocket);
@@ -84,9 +83,6 @@ int main (void){
     		char *neart = zmsg_popstr(msg);
     		string nameart = nart;
     		string newart = neart;
-    		unordered_map<string,string>::const_iterator got = articles.find(nameart);
-			if (got == articles.end())
-				zmsg_addstr(response, "failure");
 			articles[nameart] = newart;
             cout<<"new article "<<nameart<<": "<<articles[nameart]<<"\n";
     		zmsg_addstr(response, "success");

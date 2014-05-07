@@ -10,35 +10,46 @@
 
 using namespace std;
 
-zmsg_t* dispatch(zmsg_t *msg, void *editserver);
-void* chooseServer();
-
 list<void*> listServers;    //sockets list
-int numServers = 2;
+
+zmsg_t* dispatch(zmsg_t *msg, void *editserver, int numServers);
+void* chooseServer(int numServers);
 
 int main(void){
-    //valid servers addresses
     list<string> adrs;
-    adrs.push_back("12352");
-    adrs.push_back("12354");
-    adrs.push_back("12356");
-    adrs.push_back("12358");
-    adrs.push_back("12360");
     list<string>::iterator adrsIt;
-    adrsIt = adrs.begin();
+    string adr;
 
 	zctx_t *context = zctx_new();
     //socket broker
+    string recvadr;
+    cout << "port for client:";
+    cin >> recvadr;
+    adr = "tcp://*:";
+    adr.append(recvadr);
     void *broker = zsocket_new(context, ZMQ_REP); 
-    int pn = zsocket_bind(broker, "tcp://*:12350"); 
-    cout << "broker port " << pn << "\n"; 
+    int pn = zsocket_bind(broker, adr.c_str()); 
+    //cout << "broker port " << pn << "\n"; 
 
     //conection to ES
     void *editserver = zsocket_new(context, ZMQ_REQ);
-    int rc = zsocket_connect (editserver, "tcp://localhost:12351");
+    int rc = zsocket_connect (editserver, "tcp://localhost:12350");
     assert(rc == 0);
 
+    //ask for servers
+    string a;
+    int numServers=0;
+    cout << "number of servers: ";
+    cin >> numServers;
+    for (int i=0; i < numServers; i++){
+        cout << "search port server "<<i+1<<": ";
+        cin >> a;
+        adrs.push_back(a);
+    }
+
     //connection to all servers
+    adr="";
+    adrsIt = adrs.begin();
     for (int i = 0; i < numServers; i++){
         string adr = "tcp://localhost:";
         adr.append(*adrsIt);
@@ -56,7 +67,7 @@ int main(void){
         cout<<"\nfrom client \n";
     	zmsg_dump(msg);
         zmsg_t *response = zmsg_new();
-    	response = dispatch(msg, editserver);
+    	response = dispatch(msg, editserver, numServers);
         cout<<"\nto client \n";
         zmsg_dump(response);
         zmsg_send(&response, broker);
@@ -68,16 +79,16 @@ int main(void){
         zsocket_destroy(context, *it);
     zsocket_destroy(context, broker);
     zsocket_destroy(context, editserver);
-    zctx_destroy(&context); 
+    zctx_destroy(&context);
     return 0; 
 }
 
 
-zmsg_t* dispatch(zmsg_t *msg, void *editserver){
+zmsg_t* dispatch(zmsg_t *msg, void *editserver, int numServers){
 	assert(zmsg_size(msg) >= 1);
     char *op = zmsg_popstr(msg);    
     if (strcmp(op, "search") == 0){
-        void *server = chooseServer();
+        void *server = chooseServer(numServers);
         zmsg_send(&msg, server);        
         free(op);
         return zmsg_recv(server);
@@ -90,7 +101,7 @@ zmsg_t* dispatch(zmsg_t *msg, void *editserver){
     }
 }
 
-void* chooseServer(){
+void* chooseServer(int numServers){
     srand(time(NULL));
     int n = rand() % numServers;
     cout << "chosen server: "<<n+1<<"\n";

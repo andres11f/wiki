@@ -1,10 +1,7 @@
-Current valid ports for servers (ONLY USE THESE IN THIS ORDER):
-12352
-12354
-12356
-12358
-12360
+Iniciar en el siguiente orden:
+server
+editserver
+broker
+client
 
-to add more servers:
-edit broker.cc AND editserver.cc:
-Change numServers variable in both, add another push_back in adrs with the new server address. 
+server asigna automaticamente la direccion del socket de edicion como el puerto de busquedad mas uno. Ej: si search socket: 1111 entonces edit socket: 1112. Esto hay que tenerlo en cuenta a la hora de iniciar tanto editserver como broker.

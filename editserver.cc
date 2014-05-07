@@ -14,24 +14,28 @@ list<void*> listServers;
 void dispatch(zmsg_t *msg, zmsg_t *response);
 
 int main (void){
-	int numServers = 2;
-    //valid servers addresses for edition
+	int numServers=0;
 	list<string> adrs;
-    adrs.push_back("12353");
-    adrs.push_back("12355");
-    adrs.push_back("12357");
-    adrs.push_back("12359");
-    adrs.push_back("12361");
     list<string>::iterator adrsIt;
-    adrsIt = adrs.begin();
 
 	zctx_t *context = zctx_new();
 	//socket editserver
     void *editserver = zsocket_new(context, ZMQ_REP); 
-    int pn = zsocket_bind(editserver, "tcp://*:12351"); 
+    int pn = zsocket_bind(editserver, "tcp://*:12350"); 
     cout << "edit server port " << pn << "\n";
 
+    //recv list of servers
+    string a;
+    cout << "number of servers: ";
+    cin >> numServers;
+    for (int i=0; i < numServers; i++){
+        cout << "edit port server "<<i+1<<": ";
+        cin >> a;
+        adrs.push_back(a);
+    }
+
     //connection to all servers
+    adrsIt = adrs.begin();
     for (int i = 0; i < numServers; i++){
         string adr = "tcp://localhost:";
         adr.append(*adrsIt);

@@ -11,12 +11,16 @@ using namespace std;
 string search (string nameart, void* broker);
 void edit (string nameart, string newart, void* broker);
 
-
 int main (void){
 	zctx_t *context = zctx_new();
 	//socket broker
+	string recvadr;
+    cout << "port to broker:";
+    cin >> recvadr;
+    string adr = "tcp://localhost:";
+    adr.append(recvadr);
 	void *broker = zsocket_new(context, ZMQ_REQ);
-	int rc = zsocket_connect (broker, "tcp://localhost:12350");
+	int rc = zsocket_connect (broker, adr.c_str());
 	assert(rc == 0);
 
 	string art = "";
@@ -44,8 +48,14 @@ int main (void){
 			art = search(nameart, broker);
 			if (art != "")
 				cout << "=======================================\n"<< art << "\n=======================================\n";
-			else
-				cout << "Error finding article \n";
+			else{
+				cout<<"Failure searching the article. Add it."
+				string newart = "";
+				cout << "New article: ";
+				cout.flush();
+				getline(cin,newart);
+				edit(nameart, newart, broker);
+			}
 		}
 		//Edit
 		else if ((input == "2") && (art != "")){
